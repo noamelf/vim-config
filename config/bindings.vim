@@ -182,7 +182,10 @@ nnoremap <Leader>S ^vg_y:execute @@<CR>:echo 'Sourced line.'<CR>
 nnoremap <silent> <Leader>ml :call AppendModeline()<CR>
 
 " Yank buffer's absolute path to X11 clipboard
-nnoremap <Leader>y :let @+=expand("%:p")<CR>:echo 'Copied to clipboard.'<CR>
+nnoremap <Leader>Y :let @+=expand("%:p")<CR>:echo 'Copied to clipboard.'<CR>
+
+" Yank to X11 clipboard
+vnoremap <Leader>y  "+y
 
 " Drag current line/s vertically and auto-indent
 noremap  <Leader>mk :m-2<CR>==
