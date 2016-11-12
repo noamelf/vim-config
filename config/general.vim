@@ -38,13 +38,7 @@ set sessionoptions-=help
 set sessionoptions-=buffers
 set sessionoptions+=tabpages
 
-if ( ! has('nvim') || $DISPLAY !=? '') && has('clipboard')
-	if has('unnamedplus')
-		set clipboard& clipboard+=unnamedplus
-	else
-		set clipboard& clipboard+=unnamed
-	endif
-endif
+set clipboard+=unnamedplus
 
 " }}}
 " Wildmenu {{{
