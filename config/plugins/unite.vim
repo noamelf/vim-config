@@ -2,16 +2,6 @@
 " Unite
 " -----
 
-" External Tools {{{
-"
-" The silver searcher settings
-let g:my_ag_opts = get(g:, 'my_ag_opts', []) + [
-	\ '--vimgrep', '--smart-case', '--skip-vcs-ignores', '--hidden',
-	\ '--ignore', '.git', '--ignore', '.idea', '--ignore', '.stversions',
-	\ '--ignore', 'bower_modules', '--ignore', 'node_modules', '--ignore', '.tmp'
-	\ ]
-
-"}}}
 " General {{{
 let g:unite_enable_auto_select = 1
 let g:unite_restore_alternate_file = 1
@@ -27,7 +17,7 @@ let g:unite_source_rec_max_cache_files = 25000
 " file_rec/async: Use the_silver_searcher or ack
 if executable('ag')
 	let g:unite_source_rec_async_command =
-		\ [ 'ag', '--follow', '-g', '' ] + g:my_ag_opts
+		\ [ 'ag', '--vimgrep', '--smart-case', '--hidden', '--follow', '-g', '' ]
 elseif executable('ack')
 	let g:unite_source_rec_async_command = [ 'ack', '-f', '--nofilter' ]
 endif
@@ -52,7 +42,7 @@ let g:neomru#directory_mru_limit = 15
 " Use the_silver_searcher or ack or default grep
 if executable('ag')
 	let g:unite_source_grep_command = 'ag'
-	let g:unite_source_grep_default_opts = join(g:my_ag_opts)
+	let g:unite_source_grep_default_opts = '--vimgrep --smart-case --hidden'
 	let g:unite_source_grep_recursive_opt = ''
 elseif executable('ack')
 	let g:unite_source_grep_command = 'ack'
@@ -86,11 +76,6 @@ call unite#custom#profile('default', 'context', {
 
 " Conveniently set settings globally per-source
 
-call unite#custom#profile('register', 'context', {
-	\   'start_insert': 0,
-	\   'default_action': 'append'
-	\ })
-
 call unite#custom#profile('source/source', 'context', {
 	\   'vertical': 1,
 	\ })
@@ -119,14 +104,6 @@ call unite#custom#profile('source/outline', 'context', {
 
 call unite#custom#profile('source/location_list,source/quickfix', 'context', {
 	\   'start_insert': 0,
-	\ })
-
-" General purpose profile for grep and navigating code
-call unite#custom#profile('navigate,source/grep,source/tag', 'context', {
-	\   'silent': 1,
-	\   'start_insert': 0,
-	\   'winheight': 20,
-	\   'no_empty': 1,
 	\ })
 
 " }}}

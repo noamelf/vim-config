@@ -28,7 +28,7 @@ if get(g:, 'elite_mode')
 endif
 
 " Double leader key for toggling visual-line mode
-nmap <Leader><Leader> V
+nmap <silent> <Leader><Leader> :nohlsearch<CR>V
 vmap <Leader><Leader> <Esc>
 
 " Toggle fold
@@ -40,6 +40,9 @@ nnoremap <S-Return> zMza
 " Use backspace key for matchit.vim
 nmap <BS> %
 xmap <BS> %
+
+" Better x
+"nnoremap x "_x
 
 "}}}
 " Global niceties {{{
@@ -129,19 +132,19 @@ cmap W!! w !sudo tee % >/dev/null
 " ---------
 
 " Toggle paste mode
-set pastetoggle=<F2>
+set pastetoggle=<C-w>p
 
 " Show highlight names under cursor
-map <F3> :echo 'hi<'.synIDattr(synID(line('.'), col('.'), 1), 'name')
+nmap gh :echo 'hi<'.synIDattr(synID(line('.'), col('.'), 1), 'name')
 	\.'> trans<'.synIDattr(synID(line('.'), col('.'), 0), 'name').'> lo<'
 	\.synIDattr(synIDtrans(synID(line('.'), col('.'), 1)), 'name').'>'<CR>
 
 " Toggle editor visuals
-nmap <Leader>ts :setlocal spell!<cr>
-nmap <Leader>tn :setlocal nonumber! norelativenumber!<CR>
-nmap <Leader>tl :setlocal nolist!<CR>
-nmap <Leader>th :nohlsearch<CR>
-nmap <Leader>tw :setlocal wrap! breakindent!<CR>
+nmap <silent> <Leader>ts :setlocal spell!<cr>
+nmap <silent> <Leader>tn :setlocal nonumber! norelativenumber!<CR>
+nmap <silent> <Leader>tl :setlocal nolist!<CR>
+nmap <silent> <Leader>th :nohlsearch<CR>
+nmap <silent> <Leader>tw :setlocal wrap! breakindent!<CR>
 
 " Tabs
 nnoremap <silent> g0 :<C-u>tabfirst<CR>

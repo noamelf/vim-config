@@ -4,8 +4,8 @@
 " Autocommands {{{
 augroup MyAutoCmd
 
-	" Check timestamp on window enter. More eager than 'autoread'
-	autocmd WinEnter * checktime
+	" More eager than 'autoread'.
+	autocmd WinEnter,FocusGained * checktime
 
 	" If session is loaded, write session file on quit
 	autocmd VimLeavePre *
@@ -39,7 +39,7 @@ augroup MyAutoCmd
 
 	" Fix window position of help/quickfix
 	autocmd FileType help if &l:buftype ==# 'help'
-		\ | wincmd K | endif
+		\ | wincmd L | endif
 	autocmd FileType qf   if &l:buftype ==# 'quickfix'
 		\ | wincmd J | endif
 
@@ -58,13 +58,8 @@ command! -bar -complete=file -nargs=? SessionSave
 " Remove end of line white space.
 command! -range=% WhitespaceErase call <SID>WhitespaceErase(<line1>,<line2>)
 
-" Diff command credits: https://github.com/Shougo/shougo-s-github
-" Display diff with the file.
-command! -nargs=1 -complete=file Diff vertical diffsplit <args>
 " Display diff from last save.
 command! DiffOrig vert new | setlocal bt=nofile | r # | 0d_ | diffthis | wincmd p | diffthis
-" Disable diff mode.
-command! -nargs=0 Undiff setlocal nodiff noscrollbind wrap
 
 " }}}
 " Functions {{{
