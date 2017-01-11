@@ -15,25 +15,24 @@ let $VIMPATH = fnamemodify(resolve(expand('<sfile>:p')), ':h:h')
 let $VARPATH = expand(($XDG_CACHE_HOME ? $XDG_CACHE_HOME : '~/.cache').'/vim')
 
 function! s:dein_load_yaml(filename) abort
-	if executable('yaml2json')
+	if executable('yaml2json') && exists('*json_decode')
 		" Decode YAML using the CLI tool yaml2json
 		" See: https://github.com/koraa/large-yaml2json-json2yaml
-		let l:plugins = json_decode(system('yaml2json', readfile(a:filename)))
+		let g:denite_plugins = json_decode(
+					\ system('yaml2json', readfile(a:filename)))
 	else
 		" Fallback to use python and PyYAML
 	python << endpython
-import vim
-import yaml
-filename = vim.eval('a:filename')
-with open(filename, 'r') as f:
-	response = yaml.load(f.read())
-vim.command('let l:plugins = {}'.format(response))
+import vim, yaml
+with open(vim.eval('a:filename'), 'r') as f:
+	vim.vars['denite_plugins'] = yaml.load(f.read())
 endpython
 	endif
 
-	for plugin in l:plugins
+	for plugin in g:denite_plugins
 		call dein#add(plugin['repo'], extend(plugin, {}, 'keep'))
 	endfor
+	unlet g:denite_plugins
 endfunction
 
 function! s:source_file(path) abort
@@ -52,7 +51,7 @@ function! s:lazy_load_filetype() abort
 		syntax enable
 		filetype detect
 		" For some reason this event isn't being
-		" triggered, and theme doesn't load
+		" triggered, and theme doesn't load.
 		doautoall ColorScheme
 	endif
 endfunction
@@ -75,13 +74,14 @@ endif
 
 " Initialize dein.vim (package manager)
 let s:path = expand('$VARPATH/dein')
+let s:plugins_path = expand('$VIMPATH/config/plugins.yaml')
 if dein#load_state(s:path)
-	call dein#begin(s:path, [expand('<sfile>'), expand('$VIMPATH/plugins.yaml')])
+	call dein#begin(s:path, [expand('<sfile>'), s:plugins_path])
 	try
-		call s:dein_load_yaml(expand('$VIMPATH/plugins.yaml'))
+		call s:dein_load_yaml(s:plugins_path)
 	catch /.*/
 		echoerr v:exception
-		echomsg 'Error loading plugins.yaml...'
+		echomsg 'Error loading config/plugins.yaml...'
 		echomsg 'Caught: ' v:exception
 		echoerr 'Please run: pip install --user PyYAML'
 	endtry
@@ -111,12 +111,11 @@ endif
 
 " Loading configuration modules {{{
 call s:source_file('general.vim')
+call s:source_file('terminal.vim')
 call s:source_file('theme.vim')
 call s:source_file('filetype.vim')
 call s:lazy_load_filetype()
-call s:source_file('terminal.vim')
-call s:source_file('utils.vim')
-call s:source_file('bindings.vim')
+call s:source_file('mappings.vim')
 " }}}
 
 set secure

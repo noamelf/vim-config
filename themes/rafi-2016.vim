@@ -15,7 +15,7 @@ endif
 " ---------------------------------------------------------
 set showbreak=↪
 set fillchars=vert:│,fold:─
-set listchars=tab:\⋮\ ,extends:⟫,precedes:⟪,nbsp:.,trail:·
+set listchars=tab:\⋮\ ,extends:⟫,precedes:⟪,nbsp:␣,trail:·
 " }}}
 
 " Tabline {{{
@@ -82,7 +82,7 @@ let s:stl .= '%4*%*%( %{&ft} %)'                 " File type
 let s:stl .= '%3*%2* %l/%2c%4p%% %*'             " Line and column
 
 " Non-active Statusline {{{
-let s:stl_nc = " %{block#mode('', 'Z')}%n"    " Readonly & buffer
+let s:stl_nc = " %{block#mode('⚒', 'Z')}%n"    " Readonly & buffer
 let s:stl_nc .= "%6*%{block#modified('+')}%*"  " Write symbol
 let s:stl_nc .= ' %{block#filename()}'         " Relative supername
 let s:stl_nc .= '%='                           " Align to right
@@ -112,8 +112,14 @@ highlight User8 guifg=#ffb964 guibg=#30302c ctermfg=215 ctermbg=236
 " Toggle Statusline {{{
 augroup statusline
 	autocmd!
-	autocmd WinEnter,FileType,BufWinEnter,BufReadPost * let &l:statusline = s:stl
-	autocmd WinLeave * let &l:statusline = s:stl_nc
+	autocmd WinEnter,FileType,BufWinEnter,BufReadPost *
+		\ if &filetype !~? 'denite\|unite\|vimfiler\|tagbar\|undotree\|gundo\|diff'
+		\ | let &l:statusline = s:stl
+		\ | endif
+	autocmd WinLeave *
+		\ if &filetype !~? 'denite\|unite\|vimfiler\|tagbar\|undotree\|gundo\|diff'
+		\ | let &l:statusline = s:stl_nc
+		\ | endif
 augroup END "}}}
 
 " }}}
@@ -124,8 +130,8 @@ highlight! Error  term=NONE cterm=NONE
 highlight! link mkdLineBreak      NONE
 highlight! link pythonSpaceError  NONE
 highlight! link pythonIndentError NONE
-highlight! link ExtraWhitespace  SpellBad
 highlight! link WarningMsg  Comment
+highlight! link ExtraWhitespace  SpellBad
 " }}}
 
 " Plugin: VimFiler icons {{{
@@ -135,7 +141,7 @@ let g:vimfiler_tree_leaf_icon = '┆'
 let g:vimfiler_tree_opened_icon = '▼'
 let g:vimfiler_tree_closed_icon = '▷'
 let g:vimfiler_file_icon = ' '
-let g:vimfiler_readonly_file_icon = '🔧'
+let g:vimfiler_readonly_file_icon = '⚒'
 let g:vimfiler_marked_file_icon = '✓'
 "}}}
 
@@ -174,7 +180,8 @@ highlight GitGutterChangeDelete ctermfg=52 guifg=#600000 ctermbg=NONE
 " Plugin: denite {{{
 " ---------------------------------------------------------
 "highlight deniteSource_base
-highlight deniteMatched ctermfg=221 guifg=#f0c674
+highlight deniteMatched ctermfg=243 guifg=#999999
+highlight deniteMatchedChar ctermfg=221 guifg=#f0c674
 highlight link deniteGrepInput Constant
 "highlight deniteSourceLine_file_mru
 " }}}
@@ -203,6 +210,32 @@ highlight IndentGuidesEven guibg=#303030 ctermbg=236
 " Plugin: vim-operator-flashy {{{
 " ---------------------------------------------------------
 highlight link Flashy Todo
+" }}}
+
+" Plugin: vim-markology {{{
+" ---------------------------------------------------------
+hi default MarkologyHLl ctermfg=240 ctermbg=NONE cterm=NONE guifg=#575757 guibg=NONE
+hi default MarkologyHLm ctermfg=249 ctermbg=NONE cterm=NONE guifg=#aaaaaa guibg=NONE
+" }}}
+
+" Plugin: vim-choosewin {{{
+" ---------------------------------------------------------
+let g:choosewin_label = 'SDFJKLZXCV'
+let g:choosewin_overlay_enable = 1
+let g:choosewin_statusline_replace = 1
+let g:choosewin_overlay_clear_multibyte = 0
+let g:choosewin_blink_on_land = 0
+
+let g:choosewin_color_label = {
+	\ 'cterm': [ 236, 2 ], 'gui': [ '#555555', '#000000' ] }
+let g:choosewin_color_label_current = {
+	\ 'cterm': [ 234, 220 ], 'gui': [ '#333333', '#000000' ] }
+let g:choosewin_color_other = {
+	\ 'cterm': [ 235, 235 ], 'gui': [ '#333333' ] }
+let g:choosewin_color_overlay = {
+	\ 'cterm': [ 2, 10 ], 'gui': [ '#88A2A4' ] }
+let g:choosewin_color_overlay_current = {
+	\ 'cterm': [ 72, 64 ], 'gui': [ '#7BB292' ] }
 " }}}
 
 " vim: set ts=2 sw=0 tw=80 noet :

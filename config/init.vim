@@ -7,7 +7,7 @@
 let g:mapleader="\<Space>"
 let g:maplocalleader=','
 
-" Release keymappings for plug-in.
+" Release keymappings for plug-ins.
 nnoremap ;  <Nop>
 xnoremap ;  <Nop>
 nnoremap <Space>  <Nop>
@@ -59,8 +59,7 @@ endif
 let g:loaded_getscript = 1
 let g:loaded_getscriptPlugin = 1
 let g:loaded_gzip = 1
-let g:loaded_LogiPat = 1
-let g:loaded_logipat = 1
+let g:loaded_logiPat = 1
 let g:loaded_man = 1
 let g:loaded_matchit = 1
 let g:loaded_matchparen = 1
@@ -69,6 +68,8 @@ let g:loaded_netrwPlugin = 1
 let g:loaded_netrwFileHandlers = 1
 let g:loaded_netrwSettings = 1
 let g:loaded_rrhelper = 1
+let g:loaded_ruby_provider = 1
+let g:loaded_shada_plugin = 1
 let g:loaded_spellfile_plugin  = 1
 let g:loaded_tar = 1
 let g:loaded_tarPlugin = 1

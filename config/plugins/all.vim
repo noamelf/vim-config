@@ -3,54 +3,45 @@
 "---------------------------------------------------------
 
 if dein#tap('denite.nvim') "{{{
-	nnoremap <silent> [unite]/ :<C-u>Denite line<CR>
-	nnoremap <silent> [unite]* :<C-u>DeniteCursorWord line<CR>
 	nnoremap <silent> [unite]r  :<C-u>Denite -resume<CR>
 	nnoremap <silent> [unite]f  :<C-u>Denite file_rec<CR>
 	nnoremap <silent> [unite]d  :<C-u>Denite directory_rec -default-action=cd<CR>
-	nnoremap <silent> [unite]b  :<C-u>Denite buffer file_mru<CR>
-	nnoremap <silent> [unite]n  :<C-u>Denite dein<CR>
-	nnoremap <silent> [unite]g  :<C-u>Denite grep<CR>
+	nnoremap <silent> [unite]b  :<C-u>Denite buffer file_old<CR>
+	nnoremap <silent> [unite]l  :<C-u>Denite location_list -buffer-name=list<CR>
+	nnoremap <silent> [unite]q  :<C-u>Denite quickfix -buffer-name=list<CR>
+	nnoremap <silent> [unite]n  :<C-u>Denite dein -no-quit<CR>
+	nnoremap <silent> [unite]g  :<C-u>Denite grep -buffer-name=grep<CR>
 	nnoremap <silent> [unite]j  :<C-u>Denite file_point<CR>
-	nnoremap <silent> [unite]h  :<C-u>Denite neoyank -default-action=cd<CR>
+	nnoremap <silent> [unite]k  :<C-u>Denite mark -buffer-name=list<CR>
+	nnoremap <silent> [unite]s  :<C-u>Denite session<CR>
+	nnoremap <silent> [unite]mu :<C-u>Denite mpc -buffer-name=mpc<CR>
+	nnoremap <silent> [unite]/  :<C-u>Denite line<CR>
+	nnoremap <silent> [unite]*  :<C-u>DeniteCursorWord line<CR>
 
 	" Open Unite with word under cursor or selection
 	nnoremap <silent> <Leader>gf :DeniteCursorWord file_rec<CR>
-	nnoremap <silent> <Leader>gg :DeniteCursorWord grep<CR><CR>
+	nnoremap <silent> <Leader>gg :DeniteCursorWord grep -buffer-name=grep<CR><CR>
 	vnoremap <silent> <Leader>gg
-		\ :<C-u>call VSetSearch('/')<CR>:execute 'Denite grep -input='.@/<CR><CR>
+		\ :<C-u>call VSetSearch('/')<CR>:execute 'Denite grep -buffer-name=grep -input='.@/<CR><CR>
+endif
+
+" }}}
+if dein#tap('tagbar') "{{{
+	let g:tagbar_iconchars = ['▷', '◢']
+
+	let g:tagbar_map_openfold = ['l', '+', 'zo']
+	let g:tagbar_map_closefold = ['h', '-', 'zc']
+
+	nnoremap <silent> <Leader>o   :<C-u>TagbarOpenAutoClose<CR>
 endif
 
 " }}}
 if dein#tap('unite.vim') "{{{
-	nnoremap <silent> [unite]u   :<C-u>Unite source<CR>
-	nnoremap <silent> [unite]t   :<C-u>Unite tag -start-insert<CR>
-	nnoremap <silent> [unite]T   :<C-u>Unite tag/include<CR>
-	nnoremap <silent> [unite]l   :<C-u>Unite location_list<CR>
-	nnoremap <silent> [unite]q   :<C-u>Unite quickfix<CR>
-	nnoremap <silent> [unite]s   :<C-u>Unite session<CR>
-	nnoremap <silent> [unite]o   :<C-u>Unite outline<CR>
 	nnoremap <silent> [unite]ma  :<C-u>Unite mapping -silent<CR>
-	nnoremap <silent> [unite]mk  :<C-u>Unite mark<CR>
-	nnoremap <silent> [unite]mt  :<C-u>Unite -select=`tabpagenr()-1` tab<CR>
-	nnoremap <silent> [unite]mu  :<C-u>Unite -profile-name=mpc mpc/menu<CR>
-	nnoremap <silent> [unite]k
-		\ :<C-u>Unite -buffer-name=files -no-split -multi-line -unique -silent
-		\ -no-short-source-names jump_point file_point file_mru file_rec/async
-		\ buffer_tab:- file file/new<CR>
+	nnoremap <silent> [unite]mt  :<C-u>Unite tab -select=`tabpagenr()-1`<CR>
 
-	" Open Unite with word under cursor or selection
-	nnoremap <silent> <Leader>gt :UniteWithCursorWord tag -start-insert<CR>
-	vnoremap <silent> <Leader>gt :<C-u>call VSetSearch('/')<CR>:execute 'Unite tag -input='.@/<CR>
-
-	autocmd MyAutoCmd BufEnter *
-		\  if empty(&buftype) && &ft != 'go'
-		\|   nnoremap <buffer> <C-]> :<C-u>UniteWithCursorWord -immediately tag<CR>
-		\| endif
-
+	" Unite window mappings {{{
 	autocmd MyAutoCmd FileType unite call s:unite_settings()
-
-	" Unite bindings
 	function! s:unite_settings() abort "{{{
 		silent! nunmap <buffer> <Space>
 		silent! nunmap <buffer> <C-h>
@@ -103,8 +94,8 @@ if dein#tap('vimfiler.vim') "{{{
 		silent! nunmap <buffer> gf
 		silent! nunmap <buffer> -
 
-		nnoremap <silent><buffer> gr  :<C-u>Unite grep:<C-R>=<SID>selected()<CR><CR>
-		nnoremap <silent><buffer> gf  :<C-u>Unite file_rec/`has('nvim') ? 'neovim' : 'async'`:<C-R>=<SID>selected()<CR><CR>
+		nnoremap <silent><buffer> gr  :<C-u>Denite grep:<C-R>=<SID>selected()<CR> -buffer-name=grep<CR>
+		nnoremap <silent><buffer> gf  :<C-u>Denite file_rec:<C-R>=<SID>selected()<CR><CR>
 		nnoremap <silent><buffer> gd  :<C-u>call <SID>change_vim_current_dir()<CR>
 		nnoremap <silent><buffer><expr> sg  vimfiler#do_action('vsplit')
 		nnoremap <silent><buffer><expr> sv  vimfiler#do_action('split')
@@ -150,9 +141,8 @@ if dein#tap('neosnippet.vim') "{{{
 		\ ? "\<Plug>(neosnippet_expand_or_jump)" : "\<ESC>o"
 	xmap <silent><C-s>      <Plug>(neosnippet_register_oneshot_snippet)
 	imap <silent><C-Space>  <Plug>(neosnippet_start_unite_snippet)
-"	smap <silent>L     <Plug>(neosnippet_jump_or_expand)
-"	xmap <silent>L     <Plug>(neosnippet_expand_target)
-	echomsg
+	smap <silent>L          <Plug>(neosnippet_jump_or_expand)
+	xmap <silent>L          <Plug>(neosnippet_expand_target)
 endif
 
 "}}}
@@ -167,6 +157,7 @@ if dein#tap('vim-operator-surround') "{{{
 	map <silent>sa <Plug>(operator-surround-append)
 	map <silent>sd <Plug>(operator-surround-delete)
 	map <silent>sr <Plug>(operator-surround-replace)
+	nmap <silent>saa <Plug>(operator-surround-append)<Plug>(textobj-multiblock-i)
 	nmap <silent>sdd <Plug>(operator-surround-delete)<Plug>(textobj-multiblock-a)
 	nmap <silent>srr <Plug>(operator-surround-replace)<Plug>(textobj-multiblock-a)
 endif
@@ -195,48 +186,30 @@ if dein#tap('accelerated-jk') "{{{
 endif
 
 "}}}
-if dein#tap('committia.vim') "{{{
-	let g:committia_min_window_width = 70
-	let g:committia_hooks = {}
-	function! g:committia_hooks.edit_open(info)
-		if a:info.vcs ==# 'git' && getline(1) ==# ''
-			resize 4
-			startinsert
-		end
-		imap <buffer><C-d> <Plug>(committia-scroll-diff-down-half)
-		imap <buffer><C-u> <Plug>(committia-scroll-diff-up-half)
-	endfunction
+if dein#tap('vim-indent-guides') "{{{
+	nmap <silent><Leader>ti :<C-u>IndentGuidesToggle<CR>
 endif
 
 "}}}
-if dein#tap('vim-signature') "{{{
-	let g:SignatureMarkTextHLDynamic = 1
-	let g:SignatureMarkerTextHLDynamic = 1
-	let g:SignaturePurgeConfirmation = 1
-	let g:SignatureForceRemoveGlobal = 0
-	let g:SignatureMap = {
-		\ 'ListBufferMarks':   'm/',
-		\ 'ListBufferMarkers': 'm?',
-		\ 'Leader':            'm',
-		\ 'PlaceNextMark':     'm,',
-		\ 'ToggleMarkAtLine':  'm.',
-		\ 'PurgeMarksAtLine':  'm-',
-		\ 'DeleteMark':        'dm',
-		\ 'PurgeMarks':        'm<Space>',
-		\ 'PurgeMarkers':      'm<BS>',
-		\ 'GotoNextSpotAlpha': 'mn',
-		\ 'GotoPrevSpotAlpha': 'mp',
-		\ 'GotoNextMarkerAny': 'mj',
-		\ 'GotoPrevMarkerAny': 'mk',
-		\ 'GotoNextMarker': '',
-		\ 'GotoPrevMarker': '',
-		\ 'GotoNextLineAlpha': '',
-		\ 'GotoPrevLineAlpha': '',
-		\ 'GotoNextSpotByPos': '',
-		\ 'GotoPrevSpotByPos': '',
-		\ 'GotoNextLineByPos': '',
-		\ 'GotoPrevLineByPos': ''
-		\ }
+if dein#tap('vim-markology') "{{{
+	noremap <silent> mm :MarkologyPlaceMark<CR>
+	noremap <silent> mp :MarkologyPrevLocalMarkPos<CR>
+	noremap <silent> mn :MarkologyNextLocalMarkPos<CR>
+	noremap <silent> m- :MarkologyClearMark<CR>
+	noremap <silent> m/ :MarkologyLocationList<CR>
+endif
+
+"}}}
+if dein#tap('committia.vim') "{{{
+	let g:committia_hooks = {}
+	function! g:committia_hooks.edit_open(info)
+		imap <buffer><C-d> <Plug>(committia-scroll-diff-down-half)
+		imap <buffer><C-u> <Plug>(committia-scroll-diff-up-half)
+
+		setlocal winminheight=1 winheight=1
+		resize 10
+		startinsert
+	endfunction
 endif
 
 "}}}
@@ -251,89 +224,26 @@ endif
 if dein#tap('vim-choosewin') "{{{
 	nmap -         <Plug>(choosewin)
 	nmap <Leader>- :<C-u>ChooseWinSwap<CR>
-
-"	let g:choosewin_label = 'FGHJKLZXCVBNM'
-	let g:choosewin_overlay_enable = 1
-	let g:choosewin_statusline_replace = 1
-	let g:choosewin_overlay_clear_multibyte = 0
-"	let g:choosewin_tabline_replace = 1
-"	let g:choosewin_label_padding = 3
-	let g:choosewin_blink_on_land = 0
-"	let g:choosewin_overlay_shade = 1
-
-	let g:choosewin_color_label = {
-		\ 'cterm': [ 236, 2 ], 'gui': [ '#555555', '#000000' ] }
-	let g:choosewin_color_label_current = {
-		\ 'cterm': [ 234, 220 ], 'gui': [ '#333333', '#000000' ] }
-	let g:choosewin_color_other = {
-		\ 'cterm': [ 235, 235 ], 'gui': [ '#333333' ] }
-	let g:choosewin_color_overlay = {
-		\ 'cterm': [ 2, 10 ], 'gui': [ '#88A2A4' ] }
-	let g:choosewin_color_overlay_current = {
-		\ 'cterm': [ 72, 64 ], 'gui': [ '#7BB292' ] }
 endif
 
 "}}}
 if dein#tap('jedi-vim') "{{{
-	let g:jedi#completions_enabled = 0
-	let g:jedi#auto_vim_configuration = 0
-	let g:jedi#smart_auto_mappings = 0
-	let g:jedi#show_call_signatures = 0
-	let g:jedi#use_tag_stack = 0
-	let g:jedi#popup_select_first = 0
-	let g:jedi#popup_on_dot = 0
-	let g:jedi#max_doc_height = 45
-	let g:jedi#use_splits_not_buffers = 'right'
 	let g:jedi#completions_command = ''
-	let g:jedi#goto_command = '<leader>d'
-	let g:jedi#goto_assignments_command = '<leader>a'
 	let g:jedi#documentation_command = 'K'
-	let g:jedi#rename_command = '<leader>r'
-	let g:jedi#usages_command = '<leader>n'
-
-	if ! has('nvim')
-		autocmd MyAutoCmd FileType python
-			\ if has('python') || has('python3') |
-			\   setlocal omnifunc=jedi#completions |
-			\ else |
-			\   setlocal omnifunc= |
-			\ endif
-	endif
-endif
-
-"}}}
-if dein#tap('javascript-libraries-syntax.vim') "{{{
-	let g:used_javascript_libs = 'jquery,flux,underscore,backbone,react'
+	let g:jedi#use_splits_not_buffers = 'right'
+	let g:jedi#goto_command = '<leader>d'
+	let g:jedi#goto_assignments_command = '<leader>g'
+	let g:jedi#rename_command = '<Leader>r'
+	let g:jedi#usages_command = '<Leader>n'
 endif
 
 "}}}
 if dein#tap('vim-gitgutter') "{{{
-"	let g:gitgutter_realtime = 1
-"	let g:gitgutter_eager = 0
-	let g:gitgutter_map_keys = 0
-	let g:gitgutter_sh = $SHELL
-
 	nmap <Leader>hj <Plug>GitGutterNextHunk
 	nmap <Leader>hk <Plug>GitGutterPrevHunk
 	nmap <Leader>hs <Plug>GitGutterStageHunk
 	nmap <Leader>hr <Plug>GitGutterUndoHunk
 	nmap <Leader>hp <Plug>GitGutterPreviewHunk
-endif
-
-"}}}
-if dein#tap('neomake') "{{{
-	autocmd MyAutoCmd BufWritePost * call <SID>neomake_custom()
-	function! s:neomake_custom()
-		let filetypes = [
-			\   'ansible', 'python', 'php', 'ruby', 'vim', 'go', 'sh',
-			\   'javascript', 'javascript.jsx', 'json', 'css', 'yaml',
-			\   'markdown', 'html'
-			\ ]
-
-		if empty(&buftype) && index(filetypes, &filetype) > -1
-			Neomake
-		endif
-	endfunction
 endif
 
 "}}}
@@ -349,29 +259,6 @@ if dein#tap('vim-go') "{{{
 		\ | nmap <Leader>goe  <Plug>(go-referrers)
 		\ | nmap <Leader>gor  <Plug>(go-run)
 		\ | nmap <Leader>gov  <Plug>(go-vet)
-
-	let g:go_def_mapping_enabled = 0
-
-	" vim-go, do not mess with my neosnippet config!
-	let g:go_loaded_gosnippets = 1
-	let g:go_snippet_engine = 'neosnippet'
-
-	let g:go_highlight_extra_types = 1
-	let g:go_highlight_operators = 1
-endif
-
-"}}}
-if dein#tap('vim-markdown') "{{{
-	let g:vim_markdown_initial_foldlevel = 5
-	let g:vim_markdown_new_list_item_indent = 2
-	let g:vim_markdown_frontmatter = 1
-	let g:vim_markdown_conceal = 0
-endif
-
-"}}}
-if dein#tap('vim-gfm-syntax') "{{{
-	let g:gfm_syntax_enable_always = 0
-	let g:gfm_syntax_enable_filetypes = ['markdown']
 endif
 
 "}}}
@@ -394,76 +281,17 @@ if dein#tap('vim-gita') "{{{
 endif
 
 "}}}
-if dein#tap('vim-findent') "{{{
-	augroup findent
-		autocmd!
-		autocmd BufRead *.js*,*.html,*.css,.tern*
-			\ call s:setupFindent()
-	augroup END
-
-	function! s:setupFindent()
-		execute 'Findent! --no-warnings'
-		if &expandtab
-			IndentGuidesEnable
-		else
-			IndentGuidesDisable
-		endif
-	endfunction
-endif
-
-"}}}
 if dein#tap('caw.vim') "{{{
-	let g:caw_zeropos_sp = ''
-	let g:caw_zeropos_sp_right = ''
-	let g:caw_hatpos_sp = ''
-	let g:caw_hatpos_skip_blank_line = 1
-	let g:caw_dollarpos_sp_right = ''
-	let g:caw_dollarpos_skip_blank_line = 1
-	let g:caw_box_sp_right = ''
-	autocmd MyAutoCmd FileType * call s:init_caw()
-	function! s:init_caw()
-		if ! &l:modifiable
-			silent! nunmap <buffer> gc
-			silent! xunmap <buffer> gc
-			silent! nunmap <buffer> <Leader>v
-			silent! xunmap <buffer> <Leader>v
-			silent! nunmap <buffer> <Leader>V
-			silent! xunmap <buffer> <Leader>V
-		else
-			nmap <buffer> gc <Plug>(caw:prefix)
-			xmap <buffer> gc <Plug>(caw:prefix)
-			nmap <buffer> <Leader>V <Plug>(caw:tildepos:toggle)
-			xmap <buffer> <Leader>V <Plug>(caw:tildepos:toggle)
-			nmap <buffer> <Leader>v <Plug>(caw:zeropos:toggle)
-			xmap <buffer> <Leader>v <Plug>(caw:zeropos:toggle)
-		endif
-	endfunction
-endif
-
-"}}}
-if dein#tap('vim-indent-guides') "{{{
-	let g:indent_guides_enable_on_vim_startup = 0
-	let g:indent_guides_exclude_filetypes = ['help', 'unite', 'vimfiler']
-	let g:indent_guides_default_mapping = 0
-	let g:indent_guides_indent_levels = 15
-
-	nmap <silent><Leader>i :<C-u>IndentGuidesToggle<CR>
-
-	" Automatically toggle indent guides for all file-types
-	autocmd MyAutoCmd BufEnter *
-		\ if ! has('vim_starting') && ! empty(&l:filetype)
-		\ |   if g:indent_guides_autocmds_enabled == 0 && &expandtab
-		\ |     IndentGuidesEnable
-		\ |   elseif g:indent_guides_autocmds_enabled == 1 && ! &expandtab
-		\ |     IndentGuidesDisable
-		\ |   endif
-		\ | endif
+	nmap gc <Plug>(caw:prefix)
+	xmap gc <Plug>(caw:prefix)
+	nmap <Leader>V <Plug>(caw:tildepos:toggle)
+	xmap <Leader>V <Plug>(caw:tildepos:toggle)
+	nmap <Leader>v <Plug>(caw:zeropos:toggle)
+	xmap <Leader>v <Plug>(caw:zeropos:toggle)
 endif
 
 "}}}
 if dein#tap('vim-anzu') "{{{
-	let g:anzu_status_format = 'match %i of %l'
-
 	nmap n n<Plug>(anzu-update-search-status)
 	nmap N N<Plug>(anzu-update-search-status)
 	nmap <silent> <Leader>cc :<C-u>call anzu#clear_search_status()<CR>
@@ -484,26 +312,9 @@ if dein#tap('vim-asterisk') "{{{
 endif
 
 "}}}
-if dein#tap('vimwiki') "{{{
-	let wiki = {}
-	let wiki.diary_header = 'Rafi''s Diary'
-	let wiki.diary_link_fmt = '%Y-%m/%d'
-	let wiki.path = '~/docs/wiki/'
-	let wiki.path_html = '~/docs/wiki/html/'
-	let wiki.syntax = 'markdown'
-	let wiki.ext = '.md'
-	let g:vimwiki_list = [ wiki ]
-
-	nnoremap <silent> <Leader>W :<C-u>VimwikiIndex<CR>
-endif
-
-"}}}
-if dein#tap('vim-cursorword') "{{{
-	augroup cursorword-filetype
-		autocmd!
-		autocmd FileType qf,vimfiler,vimshell,thumbnail,vimcalc,quickrun,github-dashboard
-			\ let b:cursorword = 0
-	augroup END
+if dein#tap('dsf.vim') "{{{
+	nmap dsf <Plug>DsfDelete
+	nmap csf <Plug>DsfChange
 endif
 
 "}}}
@@ -519,12 +330,14 @@ endif
 "}}}
 if dein#tap('CamelCaseMotion') "{{{
 	nmap <silent> e <Plug>CamelCaseMotion_e
+	xmap <silent> e <Plug>CamelCaseMotion_e
+	omap <silent> e <Plug>CamelCaseMotion_e
 	nmap <silent> w <Plug>CamelCaseMotion_w
 	xmap <silent> w <Plug>CamelCaseMotion_w
-	omap <silent> W <Plug>CamelCaseMotion_w
+	omap <silent> w <Plug>CamelCaseMotion_w
 	nmap <silent> b <Plug>CamelCaseMotion_b
 	xmap <silent> b <Plug>CamelCaseMotion_b
-	omap <silent> B <Plug>CamelCaseMotion_b
+	omap <silent> b <Plug>CamelCaseMotion_b
 endif
 
 "}}}
@@ -542,7 +355,6 @@ if dein#tap('vim-textobj-function') "{{{
 	xmap af <Plug>(textobj-function-a)
 	xmap if <Plug>(textobj-function-i)
 endif
-
 "}}}
 
 " vim: set ts=2 sw=2 tw=80 noet :

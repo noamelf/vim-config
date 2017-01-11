@@ -1,17 +1,18 @@
 
-" Key Bindings
+" Key-mappings
 "---------------------------------------------------------
 
 " Non-standard {{{
 " ------------
 
-" Window control prefix
+" Window-control prefix
 nnoremap  [Window]   <Nop>
 nmap      s [Window]
 
-" Unite control prefix
+" Denite/Unite prefix
 nnoremap [unite]  <Nop>
 xnoremap [unite]  <Nop>
+nmap     , [unite]
 nmap     ; [unite]
 xmap     ; [unite]
 
@@ -40,9 +41,6 @@ nnoremap <S-Return> zMza
 " Use backspace key for matchit.vim
 nmap <BS> %
 xmap <BS> %
-
-" Better x
-"nnoremap x "_x
 
 "}}}
 " Global niceties {{{
@@ -78,10 +76,10 @@ noremap <expr> <C-b> max([winheight(0) - 2, 1])
 noremap <expr> <C-e> (line("w$") >= line('$') ? "j" : "3\<C-e>")
 noremap <expr> <C-y> (line("w0") <= 1         ? "k" : "3\<C-y>")
 
-" Navigate window
+" Window control
 nnoremap <C-q> <C-w>
 nnoremap <C-x> <C-w>x
-nnoremap <C-w>z :ZoomToggle<CR>
+nnoremap <silent><C-w>z :vert resize<CR>:resize<CR>:normal! ze<CR>
 
 " Select blocks after indenting
 xnoremap < <gv
@@ -114,14 +112,14 @@ cnoremap <C-d> <C-w>
 " ---------------
 
 " When pressing <leader>cd switch to the directory of the open buffer
-map <Leader>cd :cd %:p:h<CR>:pwd<CR>
+map <Leader>cd :lcd %:p:h<CR>:pwd<CR>
 
 " Fast saving
-nnoremap <Leader>w :w<CR>
-vnoremap <Leader>w <Esc>:w<CR>
-nnoremap <C-s> :<C-u>w<CR>
-vnoremap <C-s> :<C-u>w<CR>
-cnoremap <C-s> <C-u>w<CR>
+nnoremap <Leader>w :write<CR>
+vnoremap <Leader>w <Esc>:write<CR>
+nnoremap <C-s> :<C-u>write<CR>
+vnoremap <C-s> :<C-u>write<CR>
+cnoremap <C-s> <C-u>write<CR>
 
 " Save a file with sudo
 " http://forrst.com/posts/Use_w_to_sudo_write_a_file_with_Vim-uAN
@@ -165,24 +163,16 @@ nnoremap <silent> <expr> ,d ":\<C-u>".(&diff?"diffoff":"diffthis")."\<CR>"
 xnoremap <C-r> :<C-u>call VSetSearch('/')<CR>:%s/\V<C-R>=@/<CR>//gc<Left><Left><Left>
 
 " Location list movement
-nmap <Leader>j :lnext<CR>
-nmap <Leader>k :lprev<CR>
+nmap <Leader>lj :lnext<CR>
+nmap <Leader>lk :lprev<CR>
 
 " Duplicate lines
 nnoremap <Leader>d m`YP``
 vnoremap <Leader>d YPgv
 
-" Quick manual search and replace
-nnoremap ± *``gn<C-g>
-inoremap ± <C-o>gn<C-g>
-snoremap <expr> . @.
-
 " Source line and selection in vim
 vnoremap <Leader>S y:execute @@<CR>:echo 'Sourced selection.'<CR>
 nnoremap <Leader>S ^vg_y:execute @@<CR>:echo 'Sourced line.'<CR>
-
-" Append modeline to EOF
-nnoremap <silent> <Leader>ml :call AppendModeline()<CR>
 
 " Yank buffer's absolute path to X11 clipboard
 nnoremap <Leader>Y :let @+=expand("%:p")<CR>:echo 'Copied to clipboard.'<CR>
@@ -191,11 +181,12 @@ nnoremap <Leader>Y :let @+=expand("%:p")<CR>:echo 'Copied to clipboard.'<CR>
 vnoremap <Leader>y  "+y
 
 " Drag current line/s vertically and auto-indent
+vnoremap mk :m-2<CR>gv=gv
+vnoremap mj :m'>+<CR>gv=gv
 noremap  <Leader>mk :m-2<CR>==
 noremap  <Leader>mj :m+<CR>==
-vnoremap <Leader>mk :m-2<CR>gv=gv
-vnoremap <Leader>mj :m'>+<CR>gv=gv
 
+" Last session management shortcuts
 nnoremap <Leader>se :<C-u>SessionSave last<CR>
 nnoremap <Leader>os :<C-u>execute 'source '.g:session_directory.'/last.vim'<CR>
 
@@ -219,6 +210,31 @@ augroup MyAutoCmd " {{{
 	endif
 
 augroup END
+" }}}
+
+" Returns visually selected text
+function! VSetSearch(cmdtype) "{{{
+	let temp = @s
+	normal! gv"sy
+	let @/ = substitute(escape(@s, '\'.a:cmdtype), '\n', '\\n', 'g')
+	let @s = temp
+endfunction "}}}
+
+" Display diff from last save {{{
+command! DiffOrig vert new | setlocal bt=nofile | r # | 0d_ | diffthis | wincmd p | diffthis
+" }}}
+
+" Append modeline to EOF {{{
+nnoremap <silent> <Leader>ml :call <SID>append_modeline()<CR>
+
+" Append modeline after last line in buffer
+" See: http://vim.wikia.com/wiki/Modeline_magic
+function! s:append_modeline() "{{{
+	let l:modeline = printf(' vim: set ts=%d sw=%d tw=%d %set :',
+				\ &tabstop, &shiftwidth, &textwidth, &expandtab ? '' : 'no')
+	let l:modeline = substitute(&commentstring, '%s', l:modeline, '')
+	call append(line('$'), l:modeline)
+endfunction "}}}
 " }}}
 
 " s: Windows and buffers {{{
